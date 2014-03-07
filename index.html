@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hands Free Map">
+    <meta name="description" content="Control this map with voice commands">
     <meta name="author" content="Shad Campbell">
 
-    <title>Hands Free Map</title>
+    <title>Speak2map</title>
 
     <!-- CSS -->
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/3.8/js/esri/css/esri.css">
     <link rel="stylesheet" type="text/css" href="https://esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
     <link rel="stylesheet" type="text/css" href="css/site.css">
@@ -34,7 +35,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Hands Free Map</a>
+                <a class="navbar-brand" href="#">Speak2map</a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -82,15 +83,15 @@
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 
         <h1 class="page-header">Control this map with voice commands!!</h1>
-        <p class="lead">Give it a try!  Make sure your microphone is on and speak clearly and legibly into it.  Avoid back ground noise.</p>
+        <p class="lead">Give it a try!  Make sure your microphone is on and speak clearly and legibly into it.  Avoid background noise.</p>
 
         <div class="bs-callout bs-callout-info">
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Close"</strong> to close menus such as this one!</p>
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Zoom - In"</strong> (or Out)</p>
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Pan - Right"</strong> (or Up, Down, Left)</p>
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Locate - Palm Springs California"</strong> (or address, park, business, etc.)</p>
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Set Base Map - Satellite"</strong> (or Grey, Streets, Hybrid, Open Street Map, Topo, Oceans, National Geographic)</p>
-            <p><span class="glyphicon glyphicon-comment"></span>&nbsp;Say... <strong>"Help"</strong> to open the help.</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Close"</strong> to close menus such as this one!</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Zoom - In"</strong> (or Out)</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Pan - Right"</strong> (or Up, Down, Left)</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Locate - Palm Springs California"</strong> (or address, park, business, etc.)</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Set Base Map - Satellite"</strong> (or Grey, Streets, Hybrid, Open Street Map, Topo, Oceans, National Geographic)</p>
+            <p><i class="fa fa-microphone fa-lg"></i>&nbsp;Say... <strong>"Help"</strong> to open the help.</p>
         </div>
     </div>
 
@@ -103,31 +104,44 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Hands Free Map Help</h4>
+                    <h4 class="modal-title" id="myModalLabel">Speak2map Help</h4>
                 </div>
                 <div class="modal-body">
-                    
+
                     <!--<p class="lead">This application allows you to control the map using several voice commands.</p>-->
 
                     <h4>Voice Commands:</h4>
-                    <ul>
-                        <li><strong>"Close"</strong> to close menus such as this one!</li>
-                        <li><strong>"Zoom - In"</strong> (or Out)</li>
-                        <li><strong>"Pan - Right"</strong> (or Up, Down, Left)</li>
-                        <li><strong>"Locate - Palm Springs California"</strong> (or address, park, business, etc.)</li>
-                        <li><strong>"Set Base Map - Satellite"</strong> (or Grey, Streets, Hybrid, Open Street Map, Topo, Oceans, National Geographic)</li>
+                    <ul class="list-unstyled indent">
+                        <li><i class="fa fa-microphone fa-sm"></i>&nbsp;&nbsp;<strong>"Close"</strong> to close menus such as this one!</li>
+                        <li><i class="fa fa-microphone fa-sm"></i>&nbsp;&nbsp;<strong>"Zoom - In"</strong> (or Out)</li>
+                        <li><i class="fa fa-microphone fa-sm"></i>&nbsp;&nbsp;<strong>"Pan - Right"</strong> (or Up, Down, Left)</li>
+                        <li><i class="fa fa-microphone fa-sm"></i>&nbsp;&nbsp;<strong>"Locate - Palm Springs California"</strong> (or address, park, business, etc.)</li>
+                        <li><i class="fa fa-microphone fa-sm"></i>&nbsp;&nbsp;<strong>"Set Base Map - Satellite"</strong> (or Grey, Streets, Hybrid, Open Street Map, Topo, Oceans, National Geographic)</li>
                     </ul>
 
 
                     <h4>Tips:</h4>
-                    <ul>
-                        <li>Avoid background noise... this probably won't work in the vendor hall.</li>
-                        <li>Be patient, it takes a second to process your request.</li>
-                        <li>Speak clearly, avoid using after a night at the bar! </li>
-                        <li>Adjust your microphone level - Google ("Adjust my {operating system} mic sensitivity")</li>
+                    <ul class="list-unstyled indent">
+                        <li><i class="fa fa-check fa-sm"></i>&nbsp;&nbsp;Avoid background noise... this probably won't work in the vendor hall.</li>
+                        <li><i class="fa fa-check fa-sm"></i>&nbsp;&nbsp;Be patient, it takes a second to process your request.</li>
+                        <li><i class="fa fa-check fa-sm"></i>&nbsp;&nbsp;Speak clearly, avoid using after a night at the bar! </li>
+                        <li><i class="fa fa-check fa-sm"></i>&nbsp;&nbsp;Adjust your microphone level - Google ("Adjust my {operating system} mic sensitivity")</li>
                     </ul>
 
-                </div>
+                    <h4>Limitations:</h4>
+                    <ul class ="list-unstyled indent">
+                        <li><i class="fa fa-frown-o fa-sm"></i>&nbsp;&nbsp;Currently only the Chrome browser supports the HTML 5 Speech API.</li>
+                    </ul>
+
+                    <br />
+                    <h4>Created by Shad Campbell</h4>
+                    <ul class="list-unstyled indent">
+                        <li><i class="fa fa-github-alt fa-lg"></i> <a href="https://github.com/shadcampbell"> shadcampbell</a></li>
+                        <li><i class="fa fa-twitter fa-lg"></i><a href="https://twitter.com/shadc"> @shadc</a></li>
+                    </ul>
+
+
+            </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>

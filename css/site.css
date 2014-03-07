@@ -15,3 +15,7 @@
 .float-alert .lead{
     margin-bottom:20px;
 }
+
+ul.indent{
+    margin-left:20px;
+}

@@ -1,19 +1,18 @@
 if (window.location.protocol != "https:")
     window.location.href = "https:" + window.location.href.substring(window.location.protocol.length);
-var map;
 require([
   "esri/map", "esri/tasks/locator", "esri/SpatialReference", "esri/graphic",
   "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
   "esri/symbols/Font", "esri/symbols/TextSymbol", "esri/geometry/Extent",
   "esri/geometry/webMercatorUtils", "dojo/_base/array", "dojo/_base/Color",
   "dojo/parser", "https://esri.github.io/bootstrap-map-js/src/js/bootstrapmap.js",  
-  "dojo/domReady!"
+  "esri/arcgis/utils", "dojo/domReady!"
 ], function (
   Map, Locator, SpatialReference, Graphic, SimpleLineSymbol, SimpleMarkerSymbol,
-  Font, TextSymbol, Extent, webMercatorUtils, arrayUtils, Color, parser, BootstrapMap
+  Font, TextSymbol, Extent, webMercatorUtils, arrayUtils, Color, parser, BootstrapMap, arcgisUtils
 ) {
     parser.parse();
-    map = new Map("mapDiv", { center: [-56.049, 38.485], zoom: 3, basemap: "hybrid" });
+    var map = new Map("mapDiv", { center: [-56.049, 38.485], zoom: 3, basemap: "hybrid" });
     BootstrapMap.bindTo(map);
     locator = new Locator("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
     locator.on("address-to-locations-complete", function (evt) {
@@ -43,12 +42,11 @@ require([
     if (annyang) {
         annyang.debug()
         $('#welcome').fadeIn('fast');
-        var locate = function (place) { geoLocate(place); };
         var pan = function (type) {
-            if (type === "left") map.panLeft();
-            if (type === "right") map.panRight();
-            if (type === "up") map.panUp();
-            if (type === "down") map.panDown();
+            if (type === "left" || type=== "west") map.panLeft();
+            if (type === "right" || type === "east") map.panRight();
+            if (type === "up" || type === "north") map.panUp();
+            if (type === "down" || type === "south") map.panDown();
         };
         var zoom = function (type) {
             if (type === "in") map.setZoom(map.getZoom() + 1);
@@ -63,13 +61,18 @@ require([
             $('#help').modal('hide');
         };
         var showHelp = function () { $('#help').modal('show'); };
+        var setWebMaps = function (webmap) {
+            if (webmap === "ecological footprints") setWebMap("1a40fa5cc1ab4569b79f45444d728067");
+            if (webmap === "urban areas") setWebMap("2853306e11b2467ba0458bf667e1c584");
+        };
         var commands = {
             'zoom :type': zoom,
             'pan :type': pan,
-            'locate *place': locate,
+            'locate *place': geoLocate,
             'set base map *basemap': setBasemap,
             'close': close,
-            'help': showHelp
+            'help': showHelp,
+            'set web map :webmap': setWebMaps
         };
         annyang.addCallback('resultNoMatch', function () {
             $('#nomatch').fadeIn('fast').delay(3000).fadeOut('slow'); $('#welcome').fadeOut('fast');
@@ -91,105 +94,154 @@ require([
         map.setBasemap($(this).attr("data-basemapvalue"));
     });
     $("form").submit(function (e) {
-        geoLocate($("#search").val());
+        //geoLocate($("#search").val());
         e.preventDefault();
+        setWebMap("1a40fa5cc1ab4569b79f45444d728067");
     });
-
-
-
-    function loadData() {
-        //var url = 'https://www.arcgis.com/sharing/rest/search?q=Terrestrial Ecoregions -type:"web mapping application" -type:"Layer Package" (type:"Web Map") &num=10&f=json';
-        var url = 'https://www.arcgis.com/sharing/rest/search?q=deschutes type:"Feature Service" &num=20&f=json';
-        $.getJSON(url, function (data) {
-
-            var furl = data.results[0].url.replace("http://", "https://") + "/0";
-            //$.getJSON(nurl, function (ndata) {
-            //    console.log(ndata);
-            //});
-
-            console.log(furl);
-            var featureLayer = new FeatureLayer(furl, {
-                mode: esri.layers.FeatureLayer.MODE_ONDEMAND
+    function setWebMap(id) {
+        arcgisUtils.createMap(id, "mapDiv", function (response) {
+                if (map) map.destroy();
+                var ext = map.extent;
+                map = response.map;
+                map.setExtent(ext);
+                BootstrapMap.bindTo(map);
             });
-            //map.addLayer(featureLayer);
-            console.log('1')
-            featureLayer.on("load", function () {
-                console.log(featureLayer.graphics);
-            });
-            console.log('2')
-
-            //dojo.connect(featureLayer, "load", function () {
-            //    console.log("loaded");
-            //    //var zoomExtent = esri.graphicsExtent(sessionLayer.graphics);
-            //    //map.setExtent(zoomExtent.expand(1.5));
-            //});
 
 
-            //var zoomExtent = esri.graphicsExtent(featureLayer.graphics);
-            //console.log(zoomExtent);
+        //var mapDefered = arcgisUtils.createMap(id, "mapDiv");
+        //mapDefered.then(
+        //    function (response) {
+        //        if (map) map.destroy();
+        //        var ext = map.extent;
+        //        map = response.map;
+        //        map.setExtent(ext);
+        //        BootstrapMap.bindTo(map);
+        //    });
+    };
 
-            //var query = new esri.tasks.Query();
-            //query.geometry = map.extent;
+//topic.subscri
 
-            ////console.log(featureLayer);
+    //-- TEST CODE --//
+    //setWebMap("4778fee6371d4e83a22786029f30c7e1");
+    //setWebMap("7a560116489a43e0ad699c3d35f1f5e1");
 
-            //featureLayer.selectFeatures(query, FeatureLayer.SELECTION_NEW, function (features) {
-
-            //    var g = new esri.layers.GraphicsLayer();
-
-            //    for (var i = 0, il = features.length; i < il; i++) {
-
-            //        var pt = features[i].geometry.getExtent().getCenter();
-            //        console.log(pt);
-            //        //var graphic = features[i].geometry;
-            //        g.add(new esri.Graphic(pt));
-            //        console.log(graphic);
-            //    }
-
-            //    console.log(g);
-
-            //    //var extent = esri.graphicsExtent(features);
-            //    //console.log(extent);
-            //    //console.log(features);
-            //    //var roomExtent = features[0].geometry.getExtent();
-            //    //console.log(roomExtent);
-            //    //map.setExtent(roomExtent);
-
-            //});
-
-            //x = featureLayer.getSelectedFeatures();
-            //console.log(x);
-
-            //var ex = new esri.geometry.Extent(featureLayer.initialExtent, featureLayer.SpatialReference);
-            //console.log(ex);
-
-            //var find = new esri.tasks.FindTask("https://services.arcgis.com/VYsrLd1WbPJ93eyz/ArcGIS/rest/services/OR_Deschutes_SalesActivity/FeatureServer");
-            //var params = new esri.tasks.FindParameters();
-            //params.layerIds = [0];
-            //params.searchFields = ["TitleCompa"];
-            //params.searchText = "WESTERN TITLE & ESCROW CO";
-            //find.execute(params, function () {
-            //    console.log("OK");
-            //});
-
-            //var findTask = new esri.tasks.FindTask(url);
-            //var findParams = new esri.tasks.FindParameters();
-            //findParams.returnGeometry = true;
-            ////findParams.layerIds = [0];
-            ////findParams.searchFields = ["RoomName"];
-            ////findParams.searchText = room;
-            //findTask.execute(findParams, function (results) {
-            //    console.log(results);
-            //});
+    //var url = 'https://www.arcgis.com/sharing/rest/search?q=Terrestrial Ecoregions -type:"web mapping application" -type:"Layer Package" (type:"Web Map") &num=10&f=json';
+    ////var url = 'http://www.arcgis.com/sharing/rest/search?q=zoning type:"Feature Service" &num=20&f=json';
+    //$.getJSON(url, function (data) {
+    //    setWebMap(data.results[0].id);
+    //});
 
 
-            //console.log(map.extent);
-            //console.log(featureLayer.initialExtent)
-            //map.setExtent(featureLayer.initialExtent);
-            //setWebMap(data.results[0].id);
-        });
 
-    }
+
+
+
+    //var pan = {
+    //    "left": map.panLeft, "right": map.panRight,
+    //    "up": map.panUp,
+    //    "down": map.panDown
+    //};
+
+    //pan[type]()
+
+
+
+
+
+
+    //function loadData() {
+    //    //var url = 'https://www.arcgis.com/sharing/rest/search?q=Terrestrial Ecoregions -type:"web mapping application" -type:"Layer Package" (type:"Web Map") &num=10&f=json';
+    //    var url = 'https://www.arcgis.com/sharing/rest/search?q=deschutes type:"Feature Service" &num=20&f=json';
+    //    $.getJSON(url, function (data) {
+
+    //        var furl = data.results[0].url.replace("http://", "https://") + "/0";
+    //        //$.getJSON(nurl, function (ndata) {
+    //        //    console.log(ndata);
+    //        //});
+
+    //        console.log(furl);
+    //        var featureLayer = new FeatureLayer(furl, {
+    //            mode: esri.layers.FeatureLayer.MODE_ONDEMAND
+    //        });
+    //        //map.addLayer(featureLayer);
+    //        console.log('1')
+    //        featureLayer.on("load", function () {
+    //            console.log(featureLayer.graphics);
+    //        });
+    //        console.log('2')
+
+    //        //dojo.connect(featureLayer, "load", function () {
+    //        //    console.log("loaded");
+    //        //    //var zoomExtent = esri.graphicsExtent(sessionLayer.graphics);
+    //        //    //map.setExtent(zoomExtent.expand(1.5));
+    //        //});
+
+
+    //        //var zoomExtent = esri.graphicsExtent(featureLayer.graphics);
+    //        //console.log(zoomExtent);
+
+    //        //var query = new esri.tasks.Query();
+    //        //query.geometry = map.extent;
+
+    //        ////console.log(featureLayer);
+
+    //        //featureLayer.selectFeatures(query, FeatureLayer.SELECTION_NEW, function (features) {
+
+    //        //    var g = new esri.layers.GraphicsLayer();
+
+    //        //    for (var i = 0, il = features.length; i < il; i++) {
+
+    //        //        var pt = features[i].geometry.getExtent().getCenter();
+    //        //        console.log(pt);
+    //        //        //var graphic = features[i].geometry;
+    //        //        g.add(new esri.Graphic(pt));
+    //        //        console.log(graphic);
+    //        //    }
+
+    //        //    console.log(g);
+
+    //        //    //var extent = esri.graphicsExtent(features);
+    //        //    //console.log(extent);
+    //        //    //console.log(features);
+    //        //    //var roomExtent = features[0].geometry.getExtent();
+    //        //    //console.log(roomExtent);
+    //        //    //map.setExtent(roomExtent);
+
+    //        //});
+
+    //        //x = featureLayer.getSelectedFeatures();
+    //        //console.log(x);
+
+    //        //var ex = new esri.geometry.Extent(featureLayer.initialExtent, featureLayer.SpatialReference);
+    //        //console.log(ex);
+
+    //        //var find = new esri.tasks.FindTask("https://services.arcgis.com/VYsrLd1WbPJ93eyz/ArcGIS/rest/services/OR_Deschutes_SalesActivity/FeatureServer");
+    //        //var params = new esri.tasks.FindParameters();
+    //        //params.layerIds = [0];
+    //        //params.searchFields = ["TitleCompa"];
+    //        //params.searchText = "WESTERN TITLE & ESCROW CO";
+    //        //find.execute(params, function () {
+    //        //    console.log("OK");
+    //        //});
+
+    //        //var findTask = new esri.tasks.FindTask(url);
+    //        //var findParams = new esri.tasks.FindParameters();
+    //        //findParams.returnGeometry = true;
+    //        ////findParams.layerIds = [0];
+    //        ////findParams.searchFields = ["RoomName"];
+    //        ////findParams.searchText = room;
+    //        //findTask.execute(findParams, function (results) {
+    //        //    console.log(results);
+    //        //});
+
+
+    //        //console.log(map.extent);
+    //        //console.log(featureLayer.initialExtent)
+    //        //map.setExtent(featureLayer.initialExtent);
+    //        //setWebMap(data.results[0].id);
+    //    });
+
+    // }
 
 });
 
@@ -200,22 +252,4 @@ require([
 
 
 
-//-- TEST CODE --//
-//setWebMap("4778fee6371d4e83a22786029f30c7e1");
-//setWebMap("7a560116489a43e0ad699c3d35f1f5e1");
 
-//var url = 'https://www.arcgis.com/sharing/rest/search?q=Terrestrial Ecoregions -type:"web mapping application" -type:"Layer Package" (type:"Web Map") &num=10&f=json';
-////var url = 'http://www.arcgis.com/sharing/rest/search?q=zoning type:"Feature Service" &num=20&f=json';
-//$.getJSON(url, function (data) {
-//    setWebMap(data.results[0].id);
-//});
-
-//function setWebMap(id) {
-//    var mapDefered = arcgisUtils.createMap(id, "mapDiv");
-//    mapDefered.then(function (response) {
-//        console.log(response);
-//        if (map) map.destroy();
-//        map = response.map;
-//        BootstrapMap.bindTo(map);
-//    })
-//}
